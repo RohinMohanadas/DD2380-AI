@@ -88,7 +88,7 @@ public class HMM2 {
             }
 
             //Work begins here
-            double[][] firstResult = new double[statX][txnY];
+//            double[][] firstResult = new double[statX][txnY];
 
 //            for (int i = 0; i < statX; i++) {
 //                for (int j = 0; j < txnY; j++) {
