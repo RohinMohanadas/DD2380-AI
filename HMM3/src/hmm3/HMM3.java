@@ -26,8 +26,8 @@ public class HMM3 {
         try {
             // TODO code application logic here
             BufferedReader br = null;
-            br = new BufferedReader(new FileReader("F:\\KTH\\Study Period 1\\AI\\HMM3 Data\\sample2.txt"));
-//            br = new BufferedReader(new InputStreamReader(System.in));
+//            br = new BufferedReader(new FileReader("F:\\KTH\\Study Period 1\\AI\\HMM3 Data\\hmm3_01.in"));
+            br = new BufferedReader(new InputStreamReader(System.in));
             String line = new String();
             Double[][] txnMatrix = null;
             Double[][] emsnMatrix = null;
@@ -88,18 +88,10 @@ public class HMM3 {
             }
 
             //Work begins here
-//            double[][] firstResult = new double[statX][txnY];
-//            for (int i = 0; i < statX; i++) {
-//                for (int j = 0; j < txnY; j++) {
-//                    for (int k = 0; k < statY; k++) {
-//                        firstResult[i][j] += statDistrb[i][k] * txnMatrix[k][j];
-//                    }
-//                }
-//            }
             double[][] gammaCurr = new double[obsMat.length][txnX];
             int[][] idxCurr = new int[obsMat.length - 1][txnX];
             int t = 0;
-            // Initialize alphaPrev[i]
+            // Initialize Gamma[i]
             for (int i = 0; i < txnX; i++) {
                 gammaCurr[0][i] = statDistrb[statX - 1][i] * emsnMatrix[i][obsMat[t]];
             }
@@ -120,24 +112,28 @@ public class HMM3 {
                     idxCurr[t - 1][i] = idx;
                 }
             }
-            System.out.println("Here");
-            //Move to the next in the observation sequence ?
 
-//            for (t = 1; t < obsMat.length; t++) {
-//                for (int i = 0; i < txnX; i++) {
-//                    alphaCurr[t][i] = 0;
-//                    for (int j = 0; j < txnX; j++) {
-//                        alphaCurr[t][i] = alphaCurr[t][i] + alphaCurr[t - 1][j] * txnMatrix[j][i];
-//                    }
-//                    alphaCurr[t][i] = alphaCurr[t][i] * emsnMatrix[i][obsMat[t]];
-//                }
-//
-//            }
-//            double sum = 0d;
-//            for (int i = 0; i < txnX; i++) {
-//                sum = sum + alphaCurr[alphaCurr.length - 1][i];
-//            }
-//            System.out.println(Math.round(sum * Math.pow(10, 6)) / Math.pow(10, 6));
+            //Begin Backtracking for a solution
+            double max = 0;
+            int index = 0;
+            int[] displayArray = new int[obsMat.length];
+            for (int x = 0; x < txnX; x++) {
+                if (gammaCurr[obsMat.length - 1][x] > max) {
+                    max = gammaCurr[obsMat.length - 1][x];
+                    index = x;
+                }
+            }
+            displayArray[0] = index;
+            int ctr = 1;
+
+            for (int j = (obsMat.length) - 2; j >= 0; j--) {
+                index = idxCurr[j][index];
+                displayArray[ctr++] = index;
+            }
+
+            for (int i = obsMat.length - 1; i >= 0; i--) {
+                System.out.print(displayArray[i] + " ");
+            }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(HMM3.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
