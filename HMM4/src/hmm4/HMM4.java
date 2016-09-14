@@ -27,8 +27,8 @@ public class HMM4 {
         try {
             // TODO code application logic here
             BufferedReader br = null;
-            br = new BufferedReader(new FileReader("F:\\KTH\\Study Period 1\\AI\\HMM4 Data\\hmm4_01.in"));
-//            br = new BufferedReader(new InputStreamReader(System.in));
+//            br = new BufferedReader(new FileReader("F:\\KTH\\Study Period 1\\AI\\HMM4 Data\\hmm4_01.in"));
+            br = new BufferedReader(new InputStreamReader(System.in));
             String line = new String();
             Double[][] txnMatrix = null;
             Double[][] emsnMatrix = null;
@@ -88,9 +88,8 @@ public class HMM4 {
 
             }
 
-
             int iters = 0;
-            int maxIters = 10;
+            int maxIters = 500;
             double oldLogProb = -999999999;
             double[][] alphaCurr = new double[obsMat.length][txnX];
             int t = 0;
@@ -108,7 +107,7 @@ public class HMM4 {
                     c[0] += alphaCurr[0][i];
                 }
                 //scale the alpha
-                c[0]=1/c[0];
+                c[0] = 1 / c[0];
                 for (int i = 0; i < txnX; i++) {
                     alphaCurr[0][i] *= c[0];
                 }
@@ -119,7 +118,7 @@ public class HMM4 {
                     for (int i = 0; i < txnX; i++) {
                         alphaCurr[t][i] = 0;
                         for (int j = 0; j < txnX; j++) {
-                            alphaCurr[t][i] += alphaCurr[t - 1][j] * txnMatrix[j][i];
+                            alphaCurr[t][i] += (alphaCurr[t - 1][j] * txnMatrix[j][i]);
                         }
                         alphaCurr[t][i] *= emsnMatrix[i][obsMat[t]];
                         c[t] += alphaCurr[t][i];
@@ -143,7 +142,7 @@ public class HMM4 {
                     for (int i = 0; i < txnX; i++) {
                         betaCurr[t][i] = 0;
                         for (int j = 0; j < txnX; j++) {
-                            betaCurr[t][i] += txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j];
+                            betaCurr[t][i] += (txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j]);
                         }
                         betaCurr[t][i] *= c[t];
                     }
@@ -154,32 +153,30 @@ public class HMM4 {
                 double[][][] digamma = new double[obsMat.length][txnX][txnX];
                 double[][] gamma = new double[obsMat.length][txnX];
                 //Compute gamma and digamma
-                for (t = 0; t < obsMat.length; t++) {
-                    if (t < obsMat.length - 1) {
-                        denom = 0;
-                        for (int i = 0; i < txnX; i++) {
-                            for (int j = 0; j < txnX; j++) {
-                                denom += (alphaCurr[t][i] * txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j]);
-                            }
-                        }
-
-                        for (int i = 0; i < txnX; i++) {
-                            gamma[t][i] = 0;
-                            for (int j = 0; j < txnX; j++) {
-                                digamma[t][i][j] = (alphaCurr[t][i] * txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j]) / denom;
-                                gamma[t][i] += digamma[t][i][j];
-                            }
-                        }
-                    } else {
-                        denom = 0;
-                        for (int i = 0; i < txnX; i++) {
-                            denom += alphaCurr[t][i];
-                        }
-                        for (int i = 0; i < txnX; i++) {
-                            gamma[t][i] = alphaCurr[t][i] / denom;
+                for (t = 0; t < obsMat.length - 1; t++) {
+//                    if (t < obsMat.length - 1) {
+                    denom = 0;
+                    for (int i = 0; i < txnX; i++) {
+                        for (int j = 0; j < txnX; j++) {
+                            denom += (alphaCurr[t][i] * txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j]);
                         }
                     }
 
+                    for (int i = 0; i < txnX; i++) {
+                        gamma[t][i] = 0;
+                        for (int j = 0; j < txnX; j++) {
+                            digamma[t][i][j] = (alphaCurr[t][i] * txnMatrix[i][j] * emsnMatrix[j][obsMat[t + 1]] * betaCurr[t + 1][j]) / denom;
+                            gamma[t][i] += digamma[t][i][j];
+                        }
+                    }
+                }
+
+                denom = 0;
+                for (int i = 0; i < txnX; i++) {
+                    denom += alphaCurr[obsMat.length - 1][i];
+                }
+                for (int i = 0; i < txnX; i++) {
+                    gamma[t][i] = alphaCurr[obsMat.length - 1][i] / denom;
                 }
 
                 //re-estimate pi
@@ -226,23 +223,23 @@ public class HMM4 {
                 if (iters < maxIters && logProb > oldLogProb) {
                     oldLogProb = logProb;
                 } else {
-                    System.out.println("iters" + iters+" oldLogProb:"+oldLogProb);
+//                    System.out.println("iters" + iters + " oldLogProb:" + oldLogProb);
                     System.out.print(txnX + " " + txnY + " ");
                     for (int i = 0; i < txnX; i++) {
                         for (int j = 0; j < txnY; j++) {
                             System.out.print(Math.round(txnMatrix[i][j] * Math.pow(10, 6)) / Math.pow(10, 6) + " ");
-//                              System.out.print(txnMatrix[i][j]+" ");
+//                            System.out.print(txnMatrix[i][j] + " ");
                         }
                     }
                     System.out.println("");
                     System.out.print(txnX + " " + emsY + " ");
                     for (int i = 0; i < txnX; i++) {
                         for (int j = 0; j < emsY; j++) {
-//                            System.out.print(emsnMatrix[i][j]+" ");
+//                            System.out.print(emsnMatrix[i][j] + " ");
                             System.out.print(Math.round(emsnMatrix[i][j] * Math.pow(10, 6)) / Math.pow(10, 6) + " ");
                         }
                     }
-
+System.out.println("");
                     System.exit(0);
                 }
             }
