@@ -1,0 +1,759 @@
+    int gamma(const GameState &pState, uint8_t currentPlayer) {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+        int maxVal = 0;
+        int val = 0;
+        uint8_t oppCtr = 0;
+        uint8_t currCtr = 0;
+        uint8_t mtCtr = 0;
+
+        //        std::cerr << "I am here now 1" << std::endl;
+        if (pState.isEOG()) {
+            //Game over. Return something large
+            return 9999999;
+        }
+        if (currentPlayer == CELL_X) {
+
+            //            std::cerr << "I am here now" << std::endl;
+            //columns, layer by layer
+            for (z = 0; z < 4; z++) {
+                for (x = 0; x < 4; x++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (y = 0; y < 4; y++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_X:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    } else if (currCtr == 1 && mtCtr >= 1 && oppCtr >=1){
+						val -= 5000;
+					}
+                }
+            }
+
+            //rows layer by layer
+            for (z = 0; z < 4; z++) {
+                for (y = 0; y < 4; y++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (x = 0; x < 4; x++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_X:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    }
+                }
+            }
+            //z pipe layer by layer (z pipes on xy plane))
+            for (x = 0; x < 4; x++) {
+                for (y = 0; y < 4; y++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (z = 0; z < 4; z++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_X:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    }
+                }
+            }
+
+            //diagonals in xy plane
+            for (z = 0; z < 4; z++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 0; x < 4; x++) {
+                    switch (pState.at(x, x, z)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 3; x >= 0; x--) {
+                    switch (pState.at(x, 3 - x, z)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            //diagonals in yz plane
+            for (x = 0; x < 4; x++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (y = 0; y < 4; y++) {
+                    switch (pState.at(x, y, y)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (y = 3; y >= 0; y--) {
+                    switch (pState.at(x, 3 - y, y)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            //diagnoals in xz plane
+            for (y = 0; y < 4; y++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 0; x < 4; x++) {
+                    switch (pState.at(x, y, x)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 3; x >= 0; x--) {
+                    switch (pState.at(x, y, 3 - x)) {
+                        case CELL_X:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            //main diagonals (1)
+            for (z = 0; z < 4; z++) {
+                switch (pState.at(z, z, z)) {
+                    case CELL_X:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            //main diagonals (2)
+            for (x = 0; x < 4; x++) {
+                switch (pState.at(x, 3 - x, 3 - x)) {
+                    case CELL_X:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+
+
+            //main diagonals (3)
+            for (y = 0; y < 4; y++) {
+                switch (pState.at(3 - y, y, 3 - y)) {
+                    case CELL_X:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            for (z = 0; z < 4; z++) {
+                switch (pState.at(3 - z, 3 - z, z)) {
+                    case CELL_X:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+            return val;
+        } else {
+
+            //columns, layer by layer
+            for (z = 0; z < 4; z++) {
+                for (x = 0; x < 4; x++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (y = 0; y < 4; y++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_O:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    }
+                }
+            }
+
+            //rows layer by layer
+            for (z = 0; z < 4; z++) {
+                for (y = 0; y < 4; y++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (x = 0; x < 4; x++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_O:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    }
+                }
+            }
+            //z pipe layer by layer (z pipes on xy plane))
+            for (x = 0; x < 4; x++) {
+                for (y = 0; y < 4; y++) {
+                    currCtr = 0;
+                    mtCtr = 0;
+                    oppCtr = 0;
+                    for (z = 0; z < 4; z++) {
+                        switch (pState.at(x, y, z)) {
+                            case CELL_O:
+                                currCtr++;
+                                break;
+                            case CELL_EMPTY:
+                                mtCtr++;
+                                break;
+                            default:
+                                oppCtr++;
+                                break;
+                        }
+                    }
+                    if (oppCtr == 3 && currCtr == 1) {
+                        val += 9999999;
+                    } else if (currCtr == 3 && mtCtr == 1) {
+                        val += 60000;
+                    } else if (currCtr == 2 && mtCtr == 2) {
+                        val += 20000;
+                    } else if (currCtr == 1 && mtCtr == 3) {
+                        val += 10000;
+                    }
+                }
+            }
+
+            //diagonals in xy plane
+            for (z = 0; z < 4; z++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 0; x < 4; x++) {
+                    switch (pState.at(x, x, z)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 3; x >= 0; x--) {
+                    switch (pState.at(x, 3 - x, z)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            //diagonals in yz plane
+            for (x = 0; x < 4; x++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (y = 0; y < 4; y++) {
+                    switch (pState.at(x, y, y)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (y = 3; y >= 0; y--) {
+                    switch (pState.at(x, 3 - y, y)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            //diagnoals in xz plane
+            for (y = 0; y < 4; y++) {
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 0; x < 4; x++) {
+                    switch (pState.at(x, y, x)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+
+                currCtr = 0;
+                mtCtr = 0;
+                oppCtr = 0;
+                for (x = 3; x >= 0; x--) {
+                    switch (pState.at(x, y, 3 - x)) {
+                        case CELL_O:
+                            currCtr++;
+                            break;
+                        case CELL_EMPTY:
+                            mtCtr++;
+                            break;
+                        default:
+                            oppCtr++;
+                            break;
+                    }
+
+                }
+                if (oppCtr == 3 && currCtr == 1) {
+                    val += 9999999;
+                } else if (currCtr == 3 && mtCtr == 1) {
+                    val += 60000;
+                } else if (currCtr == 2 && mtCtr == 2) {
+                    val += 20000;
+                } else if (currCtr == 1 && mtCtr == 3) {
+                    val += 10000;
+                }
+            }
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            //main diagonals (1)
+            for (z = 0; z < 4; z++) {
+                switch (pState.at(z, z, z)) {
+                    case CELL_O:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            //main diagonals (2)
+            for (x = 0; x < 4; x++) {
+                switch (pState.at(x, 3 - x, 3 - x)) {
+                    case CELL_O:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+
+
+            //main diagonals (3)
+            for (y = 0; y < 4; y++) {
+                switch (pState.at(3 - y, y, 3 - y)) {
+                    case CELL_O:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+
+            currCtr = 0;
+            mtCtr = 0;
+            oppCtr = 0;
+            for (z = 0; z < 4; z++) {
+                switch (pState.at(3 - z, 3 - z, z)) {
+                    case CELL_O:
+                        currCtr++;
+                        break;
+                    case CELL_EMPTY:
+                        mtCtr++;
+                        break;
+                    default:
+                        oppCtr++;
+                        break;
+                }
+            }
+            if (oppCtr == 3 && currCtr == 1) {
+                val += 9999999;
+            } else if (currCtr == 3 && mtCtr == 1) {
+                val += 60000;
+            } else if (currCtr == 2 && mtCtr == 2) {
+                val += 20000;
+            } else if (currCtr == 1 && mtCtr == 3) {
+                val += 10000;
+            }
+            return val;
+            //            std::cerr << "I am here now n" << std::endl;
+        }
+    }
