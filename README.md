@@ -1,3 +1,5 @@
+# Academic Assignments for Artificial Intelligence course DD2380-AI
+
 # Sokoban-KTH
 Solution for sokoban pathfinding..
 https://kth.kattis.com/problems/kth.ai.sokobanpathfinding
